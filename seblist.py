@@ -516,7 +516,7 @@ Selamat mencoba dan semoga hari-harimu penuh cinta! 💗 Kalau masih ada yang bi
 """
     await event.respond(teks)
 
-@bot.on(events.NewMessage(pattern='/info'))
+@client.on(events.NewMessage(pattern='/info'))
 async def info_handler(event):
     now = datetime.datetime.now()
     uptime = now - start_time
@@ -540,7 +540,7 @@ async def info_handler(event):
     await event.reply(text, parse_mode='markdown')
 
 # Handler /stats
-@bot.on(events.NewMessage(pattern='/stats'))
+@client.on(events.NewMessage(pattern='/stats'))
 async def stats_handler(event):
     sender = await event.get_sender()
     name = sender.first_name or "Pengguna"
