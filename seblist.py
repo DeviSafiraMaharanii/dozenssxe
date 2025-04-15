@@ -30,6 +30,9 @@ MASA_AKTIF = datetime(2030, 12, 31)
 pesan_simpan = {}   # key: user_id, value: pesan terbaru
 preset_pesan = {}   # key: user_id, value: {nama_preset: isi_pesan}
 usage_stats = {}    # key: user_id, value: jumlah pesan yang berhasil dikirim
+start_time = datetime.datetime.now()
+TOTAL_SENT_MESSAGES = 0
+
 
 HARI_MAPPING = {
     "senin": "monday", "selasa": "tuesday", "rabu": "wednesday",
@@ -395,16 +398,55 @@ async def log(event):
     except FileNotFoundError:
         await event.respond("❌ Log tidak ditemukan.")
 
-@client.on(events.NewMessage(pattern='/feedback'))
-async def feedback(event):
+# Ganti ini dengan ID atau username pengembang
+PENGEMBANG_USERNAME = "@altruivstic"
+
+@bot.on(events.NewMessage(pattern='/feedback'))
+async def feedback_handler(event):
+    sender = await event.get_sender()
+    name = sender.first_name or "Pengguna"
+    username = f"@{sender.username}" if sender.username else "(tanpa username)"
+    user_id = sender.id
+    message = event.pattern_match.group(1)
+
+    if not message:
+        await event.reply(
+            "💖 Hai! Kalau kamu punya saran, kritik, atau sekadar ucapan manis, kirim seperti ini ya:\n\n"
+            "/feedback Botnya keren banget!"
+        )
+        return
+
+    # Balasan ke pengirim
+    await event.reply(
+        "💌 Terima kasih atas feedback-nya!\n"
+        "Masukanmu sangat berarti dan akan kami baca dengan penuh cinta!"
+    )
+    # Kirim ke pengembang
+    feedback_text = (
+        "💌 Feedback Baru!\n\n"
+        f"• Dari: {name}\n"
+        f"• Username: {username}\n"
+        f"• ID: {user_id}\n"
+        f"• Pesan: {message}"
+    )
     try:
-        feedback_message = event.message.raw_text.split(maxsplit=1)[1]
-        # Kirim feedback ke admin (ganti admin_chat_id sesuai kebutuhan)
-        admin_chat_id = 1538087933
-        await client.send_message(admin_chat_id, f"💗 Feedback dari {event.sender_id}:\n{feedback_message}")
-        await event.respond("💗 Terima kasih atas feedback Anda!")
-    except IndexError:
-        await event.respond("❌ Format salah! Gunakan: /feedback <pesan>")
+        await bot.send_message(PENGEMBANG_USERNAME, feedback_text, parse_mode='markdown')
+    except Exception as e:
+        await event.reply("Ups! Gagal mengirim feedback ke pengembang. Coba lagi nanti yaaw.")
+        print(f"[Feedback Error] {e}")
+
+@bot.on(events.NewMessage(pattern='/reply', from_users=PENGEMBANG_USERNAME))
+async def reply_to_user(event):
+    match = event.pattern_match
+    user_id = int(match.group(1))
+    reply_message = match.group(2)
+
+    try:
+        await bot.send_message(user_id, f"💬 Pesan dari pengembang:\n\n{reply_message}")
+        await event.reply("✅ Balasanmu sudah dikirim ke pengguna!")
+    except Exception as e:
+        await event.reply("Gagal mengirim balasan ke pengguna. Mungkin user sudah block bot?")
+        print(f"[Reply Error] {e}")
 
 @client.on(events.NewMessage(pattern='/help'))
 async def help_cmd(event):
@@ -473,12 +515,47 @@ Selamat mencoba dan semoga hari-harimu penuh cinta! 💗 Kalau masih ada yang bi
 """
     await event.respond(teks)
 
-# Command untuk menampilkan statistik penggunaan
-@client.on(events.NewMessage(pattern='/stats'))
-async def stats(event):
-    user_id = event.sender_id
-    total = usage_stats.get(user_id, 0)
-    await event.respond(f"💗 Statistik Pengguna (ID: {user_id}):\nTotal pesan berhasil dikirim: {total}")
+@bot.on(events.NewMessage(pattern='/info'))
+async def info_handler(event):
+    now = datetime.datetime.now()
+    uptime = now - start_time
+    hours, remainder = divmod(int(uptime.total_seconds()), 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    # Format tanggal aktif sejak
+    aktif_sejak = start_time.strftime("%d %B %Y pukul %H:%M WIB")
+
+    text = (
+        "💖 Tentang Bot Ini 💖\n\n"
+        "Hai! Aku adalah Heartie Bot — sahabatmu dalam meneruskan pesan otomatis!\n\n"
+        "✨ Dibuat oleh: @altruivstic\n"
+        "🛠 Versi: 1.1.0\n"
+        "🧠 Ditenagai oleh: Python + Telethon\n"
+        "🎯 Fungsi: Ngebantu kamu meneruskan pesan secara otomatis & terjadwal\n\n"
+        f"⏳ Uptime: {hours} jam, {minutes} menit\n"
+        f"📅 Aktif sejak: {aktif_sejak}\n\n"
+        "Butuh bantuan? Coba ketik /help ya!"
+    )
+    await event.reply(text, parse_mode='markdown')
+
+# Handler /stats
+@bot.on(events.NewMessage(pattern='/stats'))
+async def stats_handler(event):
+    sender = await event.get_sender()
+    name = sender.first_name or "Pengguna"
+    username = f"@{sender.username}" if sender.username else "(tanpa username)"
+
+    stats_text = (
+        f"💖 Hai {name} ({username})!\n\n"
+        "📊 Statistik Bot:\n"
+        f"• Total job aktif: {len(JOBS)}\n"
+        f"• Total pesan terkirim: {TOTAL_SENT_MESSAGES}\n"  
+        f"• Total user terdaftar: (opsional)\n"
+        f"• Waktu server: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+    await event.reply(stats_text, parse_mode='markdown')
+    await bot.send_message(chat_id, "Pesan berhasil dikirim")
+TOTAL_SENT_MESSAGES+=1
 
 # === PENGECEKAN LISENSI ===
 async def cek_lisensi():
