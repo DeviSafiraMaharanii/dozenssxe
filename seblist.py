@@ -399,10 +399,7 @@ async def log(event):
     except FileNotFoundError:
         await event.respond("❌ Log tidak ditemukan.")
 
-# Ganti ini dengan ID atau username pengembang
-PENGEMBANG_USERNAME = "@altruivstic"
-
-@bot.on(events.NewMessage(pattern='/feedback'))
+@bot.on(events.NewMessage(pattern=r'/feedback(?:\s+(.*))?'))
 async def feedback_handler(event):
     sender = await event.get_sender()
     name = sender.first_name or "Pengguna"
@@ -431,11 +428,11 @@ async def feedback_handler(event):
         f"• Pesan: {message}"
     )
     try:
-        await bot.send_message(PENGEMBANG_USERNAME, feedback_text, parse_mode='markdown')
+        await bot.send_message(PENGEMBANG_USERNAME, feedback_text)
     except Exception as e:
         await event.reply("Ups! Gagal mengirim feedback ke pengembang. Coba lagi nanti yaaw.")
         print(f"[Feedback Error] {e}")
-
+      
 @bot.on(events.NewMessage(pattern='/reply', from_users=PENGEMBANG_USERNAME))
 async def reply_to_user(event):
     match = event.pattern_match
