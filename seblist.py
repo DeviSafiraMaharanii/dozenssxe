@@ -436,7 +436,7 @@ async def feedback_handler(event):
         await event.reply("Ups! Gagal mengirim feedback ke pengembang. Coba lagi nanti yaaw.")
         print(f"[Feedback Error] {e}")
       
-@bot.on(events.NewMessage(pattern='/reply', from_users=PENGEMBANG_USERNAME))
+@client.on(events.NewMessage(pattern='/reply', from_users=PENGEMBANG_USERNAME))
 async def reply_to_user(event):
     match = event.pattern_match
     user_id = int(match.group(1))
