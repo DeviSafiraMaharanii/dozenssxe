@@ -5,14 +5,15 @@ import os
 import threading
 import logging
 
+from datetime import datetime, timedelta
 from telethon import TelegramClient, events
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from flask import Flask
 
 # === KONFIGURASI TELEGRAM ===
-api_id = 18973385  # Ganti dengan api_id milikmu (dari my.telegram.org)
-api_hash = '507fb19ac5a92c7955ad0260b62830d6'  # Ganti dengan api_hash milikmu
+api_id = 18973385
+api_hash = '507fb19ac5a92c7955ad0260b62830d6'
 client = TelegramClient("user_session", api_id, api_hash)
 
 # === SETUP LOGGER ===
@@ -30,18 +31,18 @@ MASA_AKTIF = datetime(2030, 12, 31)
 pesan_simpan = {}   # key: user_id, value: pesan terbaru
 preset_pesan = {}   # key: user_id, value: {nama_preset: isi_pesan}
 usage_stats = {}    # key: user_id, value: jumlah pesan yang berhasil dikirim
-start_time = datetime.datetime.now()
+start_time = datetime.now()
 TOTAL_SENT_MESSAGES = 0
-
 
 HARI_MAPPING = {
     "senin": "monday", "selasa": "tuesday", "rabu": "wednesday",
     "kamis": "thursday", "jumat": "friday", "sabtu": "saturday", "minggu": "sunday"
 }
 
-# === FUNCTION UNTUK MENGHITUNG STATISTIK PENGGUNA ===
 def update_usage(user_id, count):
+    global TOTAL_SENT_MESSAGES
     usage_stats[user_id] = usage_stats.get(user_id, 0) + count
+    TOTAL_SENT_MESSAGES += count
 
 # === FUNCTION UNTUK MELAKUKAN FORWARDING PESAN ===
 async def forward_job(user_id, mode, source, message_id_or_text, jumlah_grup, durasi_jam: float, jumlah_pesan):
