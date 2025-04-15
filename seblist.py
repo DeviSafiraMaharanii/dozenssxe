@@ -398,8 +398,10 @@ async def log(event):
             await event.respond(f"📜💗 Log Terbaru:\n{logs}")
     except FileNotFoundError:
         await event.respond("❌ Log tidak ditemukan.")
+      
 
-@bot.on(events.NewMessage(pattern=r'/feedback(?:\s+(.*))?'))
+PENGEMBANG_USERNAME = @altruivstic
+@client.on(events.NewMessage(pattern=r'/feedback(?:\s+(.*))?'))
 async def feedback_handler(event):
     sender = await event.get_sender()
     name = sender.first_name or "Pengguna"
@@ -419,7 +421,7 @@ async def feedback_handler(event):
         "💌 Terima kasih atas feedback-nya!\n"
         "Masukanmu sangat berarti dan akan kami baca dengan penuh cinta!"
     )
-    # Kirim ke pengembang
+
     feedback_text = (
         "💌 Feedback Baru!\n\n"
         f"• Dari: {name}\n"
@@ -427,8 +429,9 @@ async def feedback_handler(event):
         f"• ID: {user_id}\n"
         f"• Pesan: {message}"
     )
+
     try:
-        await bot.send_message(PENGEMBANG_USERNAME, feedback_text)
+        await client.send_message(PENGEMBANG_USERNAME, feedback_text)
     except Exception as e:
         await event.reply("Ups! Gagal mengirim feedback ke pengembang. Coba lagi nanti yaaw.")
         print(f"[Feedback Error] {e}")
