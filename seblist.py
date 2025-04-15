@@ -400,7 +400,7 @@ async def log(event):
         await event.respond("❌ Log tidak ditemukan.")
       
 
-PENGEMBANG_USERNAME = @altruivstic
+PENGEMBANG_USERNAME = "@altruivstic"
 @client.on(events.NewMessage(pattern=r'/feedback(?:\s+(.*))?'))
 async def feedback_handler(event):
     sender = await event.get_sender()
