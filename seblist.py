@@ -539,13 +539,19 @@ async def info_handler(event):
     )
     await event.reply(text, parse_mode='markdown')
 
-# Handler /stats
 @client.on(events.NewMessage(pattern='/stats'))
 async def stats_handler(event):
+    global TOTAL_SENT_MESSAGES  # jika perlu mengubah variabel global
+
+    # Ambil data pengirim
     sender = await event.get_sender()
     name = sender.first_name or "Pengguna"
     username = f"@{sender.username}" if sender.username else "(tanpa username)"
 
+    # Ambil chat_id dari event
+    chat_id = event.chat_id  # Ini yang akan kamu gunakan untuk mengirim pesan
+
+    # Siapkan pesan statistik
     stats_text = (
         f"💖 Hai {name} ({username})!\n\n"
         "📊 Statistik Bot:\n"
@@ -554,9 +560,15 @@ async def stats_handler(event):
         f"• Total user terdaftar: (opsional)\n"
         f"• Waktu server: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
+
+    # Kirim pesan statistik
     await event.reply(stats_text, parse_mode='markdown')
+
+    # Kirim pesan konfirmasi ke chat yang sama
     await bot.send_message(chat_id, "Pesan berhasil dikirim")
-TOTAL_SENT_MESSAGES+=1
+
+    # Tambahkan pengiriman pesan ke total
+    TOTAL_SENT_MESSAGES += 1
 
 # === PENGECEKAN LISENSI ===
 async def cek_lisensi():
