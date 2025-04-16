@@ -1,1 +1,1 @@
-worker: python seblist.py
+worker: python doze.py
