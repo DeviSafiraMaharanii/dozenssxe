@@ -581,10 +581,14 @@ app = Flask(__name__)
 def home():
     return "💗 Heartie Bot is alive!"
 
+@app.route('/ping')
+def ping():
+    return "✅ Xixi! Bot masih hidup."
+
 def keep_alive():
     app.run(host="0.0.0.0", port=8000)
 
-# Jalankan server Flask di thread terpisah agar aplikasi tetap aktif
+# Jalankan server Flask di thread terpisah
 threading.Thread(target=keep_alive).start()
 
 # === JALANKAN BOT ===
