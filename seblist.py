@@ -12,8 +12,8 @@ from apscheduler.triggers.cron import CronTrigger
 from flask import Flask
 
 # === KONFIGURASI TELEGRAM ===
-api_id = 18973385
-api_hash = '507fb19ac5a92c7955ad0260b62830d6'
+api_id = 22624519
+api_hash = '44b74a54883bc95cd854426370614e74'
 client = TelegramClient("user_session", api_id, api_hash)
 
 # === SETUP LOGGER ===
@@ -586,7 +586,7 @@ def ping():
     return "✅ Xixi! Bot masih hidup."
 
 def keep_alive():
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=5000)
 
 # Jalankan server Flask di thread terpisah
 threading.Thread(target=keep_alive).start()
