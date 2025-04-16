@@ -33,6 +33,7 @@ preset_pesan = {}   # key: user_id, value: {nama_preset: isi_pesan}
 usage_stats = {}    # key: user_id, value: jumlah pesan yang berhasil dikirim
 start_time = datetime.now()
 TOTAL_SENT_MESSAGES = 0
+JOBS = {}
 
 HARI_MAPPING = {
     "senin": "monday", "selasa": "tuesday", "rabu": "wednesday",
@@ -521,29 +522,26 @@ Selamat mencoba dan semoga hari-harimu penuh cinta! 💗 Kalau masih ada yang bi
 
 @client.on(events.NewMessage(pattern='/info'))
 async def info_handler(event):
-    try:
-        now = datetime.datetime.now()
-        uptime = now - start_time
-        hours, remainder = divmod(int(uptime.total_seconds()), 3600)
-        minutes, seconds = divmod(remainder, 60)
+    now = datetime.now()
+    uptime = now - start_time
+    hours, remainder = divmod(int(uptime.total_seconds()), 3600)
+    minutes, seconds = divmod(remainder, 60)
 
-        aktif_sejak = start_time.strftime("%d %B %Y pukul %H:%M WIB")
+    aktif_sejak = start_time.strftime("%d %B %Y pukul %H:%M WIB")
 
-        text = (
-            "💖 Tentang Bot Ini 💖\n\n"
-            "Hai! Aku adalah Heartie Bot — sahabatmu dalam meneruskan pesan otomatis!\n\n"
-            "✨ Dibuat oleh: @altruivstic\n"
-            "🛠 Versi: 1.1.0\n"
-            "🧠 Ditenagai oleh: Python + Telethon\n"
-            "🎯 Fungsi: Ngebantu kamu meneruskan pesan secara otomatis & terjadwal\n\n"
-            f"⏳ Uptime: {hours} jam, {minutes} menit\n"
-            f"📅 Aktif sejak: {aktif_sejak}\n\n"
-            "Butuh bantuan? Coba ketik /help ya!"
-        )
-        await event.reply(text, parse_mode='markdown')
-    except Exception as e:
-        await event.reply(f"❌ Terjadi error: {e}")
-
+    text = (
+        "💖 Tentang Bot Ini 💖\n\n"
+        "Hai! Aku adalah Heartie Bot — sahabatmu dalam meneruskan pesan otomatis!\n\n"
+        "✨ Dibuat oleh: @altruivstic\n"
+        "🛠 Versi: 1.1.0\n"
+        "🧠 Ditenagai oleh: Python + Telethon\n"
+        "🎯 Fungsi: Ngebantu kamu meneruskan pesan secara otomatis & terjadwal\n\n"
+        f"⏳ Uptime: {hours} jam, {minutes} menit\n"
+        f"📅 Aktif sejak: {aktif_sejak}\n\n"
+        "Butuh bantuan? Coba ketik /help yaaw!"
+    )
+  
+    await event.reply(text)
 @client.on(events.NewMessage(pattern='/stats'))
 async def stats_handler(event):
     try:
